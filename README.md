@@ -7,7 +7,7 @@ It can also be used for remote download.
 ### **utorrent**
 Set *load .torrent automatically from* (red box) to the **/torrent** directory.
 
-![utorrent setting](raw.githubusercontent.com/venero/PT-free-py/master/mdpic/1.PNG)
+![utorrent setting](https://raw.githubusercontent.com/venero/PT-free-py/master/mdpic/1.PNG)
 ### User name and password
 Create a new file **PT-id-pwd.txt**, write your user ID at the first line, and write your password at the second line, like:
 ```c
@@ -21,7 +21,7 @@ There is no background running scheme for this program currently, thus the only 
 
 The status information is also avliable at **/ptpy-setting/status.txt**.
 
-![running](raw.githubusercontent.com/venero/PT-free-py/master/mdpic/2.PNG)
+![running](https://raw.githubusercontent.com/venero/PT-free-py/master/mdpic/2.PNG)
 ## Layout
 ### Free scan
 Use this program to download free torrents to a directory **/DIR**, set utorrent to automatically scan **/DIR** and load torrents from it.

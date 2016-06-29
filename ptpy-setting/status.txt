@@ -1,0 +1,14 @@
+Status report from PT-free-py
+Start time: 2016-06-29 13:16:29
+Update time: 2016-06-29 13:16:29
+
+Round: 0
+Max torrent number: 137769
+Free torrent count: 42
+
+[Free setting] Seed 137242 [Complete]
+
+[Force download] Seed 136209 [Complete]
+[Force download] Seed 136709 [Complete]
+[Force download] Seed 112004 [Complete]
+[Force download] Seed 136224 [Complete]

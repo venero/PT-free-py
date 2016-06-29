@@ -1,0 +1,5 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+pt.sjtu.edu.cn	FALSE	/	FALSE		PHPSESSID	272fbca88dcd34fc0c229338d9e589c5

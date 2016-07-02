@@ -1,7 +1,7 @@
 # PT-free-py
 PT-free-py is a python program for scaning and downloading free torrents at PuTao (https://pt.sjtu.edu.cn/).
 
-It can also be used for remote download.
+It can also be used for remote torrent download.
 
 ## Configuring PT-free-py
 ### **utorrent**
@@ -17,27 +17,27 @@ password
 ```
 
 ### Runing
-There is no background running scheme for this program currently, thus the only way to run it is to use `python` and check the Console for its output.
+There is no background running scheme for this program at this time, thus the only way to run it is to use `python` and check the Console for its output.
 
 The status information is also avliable at **/ptpy-setting/status.txt**.
 
 ![running](https://raw.githubusercontent.com/venero/PT-free-py/master/mdpic/2.PNG)
 ## Layout
 ### Free scan
-Use this program to download free torrents to a directory **/DIR**, set utorrent to automatically scan **/DIR** and load torrents from it.
+Use this program to download free torrents to a directory **/torrent**, set utorrent to automatically scan **/torrent** and load torrents from it.
 ### Remote download
-Use any net-disk to synchronize the **/ptpy-setting** directory, and update **UserSetDownload.txt** with target PT-Torrent ID.
+Use any net-disk to synchronize the **/ptpy-setting** directory, and update **UserSetDownload.txt** with the PT-Torrent IDs that you wish to download.
 
 ## Notes
 ### Free scan
-- Torrent list is kept in **torrentlist.txt**, you probably wonder why I didn't scan the **/torrent** directory.
+- Torrent list is kept in **torrentlist.txt**, you probably wonder why I didn't scan the **/torrent** directory to build this list.
 Well, (1) **utorrent** might delete the torrent file in some settings (as the above figure shows: *[checkbox] delete loaded torrent*).
 (2) **utorrent** changes the name of the torrent file once it has been downloaded.
 (3) The torrents can be deleted afterwards, which saves space.
-~~(4) The above are just nonsense, I just too lazy to write the code to scan the **/torrent** directory.~~
+~~(4) The above are just nonsense, I am just too lazy to write the code to scan the **/torrent** directory.~~
 
 - Frequency can not be higher than 2.5s per inquiry, otherwise the inquiry will be denied by PuTao.
-There is **no recovery** in this program, you can view your status at **/ptpy-setting/status.txt** and judge whether the program has stoped.
+There is **no recovery scheme** in this program, you can view your status at **/ptpy-setting/status.txt** and judge whether the program has stoped.
 
 - `innersleep` and `outersleep` halts the program with a random amount of time.
 I'm trying to make it looks like someone was refreshing the pages once in a while.

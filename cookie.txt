@@ -2,4 +2,9 @@
 # http://curl.haxx.se/rfc/cookie_spec.html
 # This is a generated file!  Do not edit.
 
-pt.sjtu.edu.cn	FALSE	/	FALSE		PHPSESSID	272fbca88dcd34fc0c229338d9e589c5
+pt.sjtu.edu.cn	FALSE	/	FALSE		PHPSESSID	c589368c017cb3d15d496ba13ea4efb3
+pt.sjtu.edu.cn	FALSE	/	FALSE	2147483645	c_expiresintv	0
+pt.sjtu.edu.cn	FALSE	/	FALSE	2147483645	c_secure_login	bm9wZQ%3D%3D
+pt.sjtu.edu.cn	FALSE	/	FALSE	2147483645	c_secure_pass	6bd08697e99856c49e0ec96d0d785b2b
+pt.sjtu.edu.cn	FALSE	/	FALSE	2147483645	c_secure_ssl	eWVhaA%3D%3D
+pt.sjtu.edu.cn	FALSE	/	FALSE	2147483645	c_secure_uid	NTAwMDU%3D

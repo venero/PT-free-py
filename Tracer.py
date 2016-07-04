@@ -116,27 +116,33 @@ while True:
 
     #[start]PT-ID and PT-pwd
     idpwdfile = open('PT-id-pwd.txt','r')
-    ptuser = idpwdfile.readline()
-    if not ptuser:
+    ptuserf = idpwdfile.readline()
+    if not ptuserf:
         print '[Error] Invalid PT-user-ID'
         break
+    l = len(ptuserf)
+
+    ptuser = ptuserf[0:l-1]
     ptpwd = idpwdfile.readline()
     if not ptpwd:
         print '[Error] Invalid PT-user-Password'
         break
     idpwdfile.close()
+    #print 'c' + ptuser + 'a' + ptpwd + 'b'
     #[end]PT-ID and PT-pwd
-        
+    
     filename = 'cookie.txt'
 
     cookie = cookielib.MozillaCookieJar(filename)
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    #params = {'username': ptuser, "password": ptpwd, "checkcode" : "XxXx"}
+    #strcode = '\'username\':\''+ ptuser + '\',\'password\':\'' + ptpwd + '\',\'checkcode\':\'XxXx\''
     postdata = urllib.urlencode({
-			'username':ptuser,
-			'password':ptpwd,
+    			'username':ptuser,
+    			'password':ptpwd,
                         'checkcode':'XxXx'
-		})
-
+    		})
+    #postdata = urllib.urlencode(params)
     loginUrl = 'https://pt.sjtu.edu.cn/takelogin.php'
 
     result = opener.open(loginUrl,postdata)

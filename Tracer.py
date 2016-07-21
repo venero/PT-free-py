@@ -1,3 +1,4 @@
+# coding=gbk
 import urllib
 import urllib2
 import cookielib
@@ -8,6 +9,48 @@ import random
 import re
 from threading import Timer 
 import time
+# fix encoding
+import sys
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
+
+content = 0
+def torrentTitle(titleid):
+    #opener7 = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    #titleno = bytes(titleid)
+    #print titleno
+    #titleUrl = 'https://pt.sjtu.edu.cn/details.php?id='+titleno
+    #result3 = opener7.open(titleUrl)
+    #content = result3.read()
+    #print content
+    patternfree = re.compile('<script language="JavaScript" src="ajaxbasic.js" type="text/javascript"></script><h1 align=\'center\'>(.+?)(?:</h1>|&nbsp;)')
+    title = re.findall(patternfree,content)
+    #print title[0]
+    #for element in title:
+    #    print unicode(element,'utf-8')
+    #    break
+    if len(title) == 0 :
+        return '[Invalid torrent title]'
+    return unicode(title[0],'utf-8')
+
+def torrentSize(titleid):
+    #opener8 = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    #titleno = bytes(titleid)
+    #print titleno
+    #titleUrl = 'https://pt.sjtu.edu.cn/details.php?id='+titleno
+    #result8 = opener8.open(titleUrl)
+    #content = result8.read()
+    #print content
+    patternfree = re.compile('<td class="rowfollow" valign="top" align=\'left\'><b>.+?</b>(.+?)&nbsp;')
+    title = re.findall(patternfree,content)
+    #print title[0]
+    #for element in title:
+    #    print unicode(element,'utf-8')
+    #    break
+    if len(title) == 0 :
+        return '[Invalid torrent size]'
+    return unicode(title[0],'utf-8')
+
 
 # UserSetFree.txt
 #   The head of free torrent. In case of a break from too many un-free torrents.
@@ -39,7 +82,7 @@ userdownscan = 600
 
 start_time = time.strftime('Start time: %Y-%m-%d %H:%M:%S\n')
 start_timero = time.strftime('%Y-%m-%d %H:%M:%S')
-
+loglist = []
 while True:
     print '\nRound: '+bytes(round)+ ' start.'
     print 'Current time:'+time.strftime('%Y-%m-%d %H:%M:%S')+' (Program started from:'+ start_timero+')\n'
@@ -88,7 +131,7 @@ while True:
     udfile.close()
     #[end]user download
     
-    print 'Max torrent:'+bytes(max(list))
+    print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] Max torrent:'+bytes(max(list))
     #[end]Read the list
 
     free_to_write = []
@@ -96,7 +139,7 @@ while True:
     #[start]single turn
     timer_interval=0.1
     def delayrun(): 
-        print 'Single round started ( PT-Torrent from ' + bytes(max(list)+searchfront) + ' to ' + bytes(max(list)-searchend) + ' )'
+        print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] Single round started ( PT-Torrent from ' + bytes(max(list)+searchfront) + ' to ' + bytes(max(list)-searchend) + ' )'
     t=Timer(timer_interval,delayrun) 
     t.start()
 
@@ -163,12 +206,14 @@ while True:
             if element == userid:
                 print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+bytes(userid)+' (from user setting [Free]) has already been downloaded.'
                 fw.write('[Free setting] PT-Torrent '+bytes(userid)+' [Complete]\n')
+                
                 user_pass_flag = 1
                 break
         if user_pass_flag == 0:
             no = userid
             print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+bytes(userid)+' (from user setting [Free]) will be downloaded.'
             fw.write('[Free setting] PT-Torrent '+bytes(userid)+' [Downloading]\n')
+            #loglist.append('[Log] [Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] : [Free setting] PT-Torrent '+bytes(userid)+' [Downloading]\n')
             
     fw.write('\n')
 
@@ -184,18 +229,27 @@ while True:
                 for element in list:
                     if element == userdownloadid:
                         print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+bytes(userdownloadid)+' (from user setting [Download]) has already been downloaded.'
-                        fw.write('[Force download] Seed '+bytes(userdownloadid)+' [Complete]\n')
+                        fw.write('[Force download] PT-Torrent '+bytes(userdownloadid)+' [Complete]\n')
+                        #loglist.append('[Log] Seed '+bytes(userdownloadid)+' [Complete]\n')
+                        #print torrentSize(userdownloadid)
+                        #loglist.append('[Log] [Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] [TEST]: [Force download] PT-Torrent '+bytes(userdownloadid)+' [Complete]\n')
                         user_download_pass_flag = 1
                         break
                  
                 if user_download_pass_flag == 0:
                     no = userdownloadid
                     print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+bytes(userdownloadid)+' (from user setting [Download]) will be downloaded.'
-                    fw.write('[Force download] Seed '+bytes(userdownloadid)+' [Downloading]\n')
+                    fw.write('[Force download] PT-Torrent '+bytes(userdownloadid)+' [Downloading]\n')
+                    #loglist.append('[Log] [Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] : [Force download] PT-Torrent '+bytes(userdownloadid)+' [Downloading]\n')
                     breakflag = 1
             else:
-                fw.write('[Force download] Seed '+bytes(userdownloadid)+' [Pending]\n')
-            
+                fw.write('[Force download] PT-Torrent '+bytes(userdownloadid)+' [Pending]\n')
+    
+    #[start]Write logs
+    fw.write('\n')
+    for element in loglist:
+        fw.write(element)
+    #[end]Write logs
     fw.close()
     # user_pass_flag == 0
     #   user setting is correct and will be downloaded
@@ -270,29 +324,29 @@ while True:
         
         if (user_download_pass_flag != 0):
             if (itemsfree):
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Free].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Free].'
             elif (items30):
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Download for 30%].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Download for 30%].'
                 no = no - 1
                 continue
             elif (items50):
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Download for 50%].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Download for 50%].'
                 no = no - 1
                 continue
             elif (items70):
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Download for 70%].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Download for 70%].'
                 no = no - 1
                 continue
             elif (items2up):
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Upload for 2X].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Upload for 2X].'
                 no = no - 1
                 continue
             elif not (itemsnone):
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Invalid].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Invalid].'
                 no = no - 1
                 continue
             else:
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is [Regular].'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+ ' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is [Regular].'
                 no = no - 1
                 continue
         #[end]Search for free pattern
@@ -301,7 +355,7 @@ while True:
         flag = 0
         for element in list:
             if element == no:
-                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' has already been downloaded.'
+                print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' has already been downloaded.'
                 no = no - 1
                 flag = 1
                 break
@@ -331,7 +385,18 @@ while True:
         flist = open('torrentlist.txt','a')
         flist.write(showno+'\n')
         flist.close()
-        print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+' ('+bytes(searchhead-no)+'/'+bytes(searchfront+searchend)+')'+' is listed for download.'               
+        print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+' is listed for download.'
+        #print '[Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] '+'PT-Torrent '+showno+' ('+bytes(searchhead-no+1)+'/'+bytes(searchfront+searchend)+')'+' is listed for download.'
+        print '--Name:'+torrentTitle(no)
+        print '--Size:'+torrentSize(no)
+        if user_pass_flag == 0:
+            loglist.append('[Log] [Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] : PT-Torrent '+showno+' (from user setting [Free]) is listed for download.\n')
+        if user_download_pass_flag == 0:
+            loglist.append('[Log] [Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] : PT-Torrent '+showno+' (from user setting [Download]) is listed for download.\n')
+        if user_pass_flag == 1 and user_download_pass_flag == 1:
+            loglist.append('[Log] [Round '+bytes(round)+' '+time.strftime('%Y-%m-%d %H:%M:%S')+'] : PT-Torrent '+showno+' (free torrent) is listed for download.\n')
+        loglist.append('[Log] --Name:'+torrentTitle(no)+'\n')
+        loglist.append('[Log] --Size:'+torrentSize(no)+'\n')
         no = no - 1
         if user_pass_flag == 0 or user_download_pass_flag == 0:
             break

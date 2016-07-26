@@ -9,6 +9,9 @@ import random
 import re
 from threading import Timer 
 import time
+# disk
+from ctypes import *
+import win32file
 # fix encoding
 import sys
 reload(sys)
@@ -78,12 +81,20 @@ searchend = 150
 # userdownscan
 #   The largest mean time between two user download check
 userdownscan = 600
+# disk
+#   The disk used for download
+disk = 'f:'
+#   The threshold for status warning
+diskThreshold = 0.1
+#   The reserve space on the disk (GB)
+diskReserve = 1
 # End of parameters
 
-start_time = time.strftime('Start time: %Y-%m-%d %H:%M:%S\n')
+start_time = time.strftime('[Status] Start time: %Y-%m-%d %H:%M:%S\n')
 start_timero = time.strftime('%Y-%m-%d %H:%M:%S')
 loglist = []
-while True:
+diskExhausted = 0
+while 1:
     print '\nRound: '+bytes(round)+ ' start.'
     print 'Current time:'+time.strftime('%Y-%m-%d %H:%M:%S')+' (Program started from:'+ start_timero+')\n'
     list = []
@@ -143,20 +154,31 @@ while True:
     t=Timer(timer_interval,delayrun) 
     t.start()
 
-
-
     #[start]update status
     fw = open('ptpy-setting\status.txt','w+')
-    fw.write(time.strftime('Status report from PT-free-py\n'))
-    current_time = time.strftime('Update time: %Y-%m-%d %H:%M:%S\n\n')
+    fw.write(time.strftime('# Status report from PT-free-py\n'))
+    current_time = time.strftime('[Status] Update time: %Y-%m-%d %H:%M:%S\n\n')
     fw.write(start_time)
     fw.write(current_time)
-    fw.write('Round: '+bytes(round)+'\n')
-    fw.write('Max torrent number: '+bytes(max(list))+'\n')
-    fw.write('Free torrent count: '+bytes(len(list))+'\n\n')
-    #fw.close()
-    #[end]update status
+    fw.write('[Status] Round: '+bytes(round)+'\n')
+    fw.write('[Status] Max torrent number: '+bytes(max(list))+'\n')
+    fw.write('[Status] Torrent number range: '+bytes(max(list)-searchend)+' - '+bytes(max(list)+searchfront)+'\n')
+    fw.write('[Status] Free torrent count: '+bytes(len(list))+'\n\n')
 
+    sectorsPerCluster, bytesPerSector, numFreeClusters, totalNumClusters = win32file.GetDiskFreeSpace(disk)
+    # get free space
+    freespace = (numFreeClusters * sectorsPerCluster * bytesPerSector) /(1024.0 * 1024.0 * 1024.0)
+    # get total space
+    totalspace = (totalNumClusters * sectorsPerCluster * bytesPerSector) /(1024.0 * 1024.0 * 1024.0)
+    # I don't use the function 'round' here because there is a variable 'round' in main.
+    if freespace/totalspace < diskThreshold:
+        fw.write('[Warning] Free space in '+disk.upper()+' is low ('+ '%.2f' % (freespace/totalspace*100)+'%).\n')
+    fw.write('[Disk] In disk '+disk.upper()+' Free space: '+'%.2f' % freespace+'GB. Total space: '+'%.2f' % totalspace+'GB.\n')
+    if freespace < diskReserve:
+        fw.write('[Error] Free space in '+disk.upper()+' is below critical value ('+'%.2f' % diskReserve+'GB), Tracer has stopped.\n')
+        diskExhausted = 1
+    #[end]update status
+    fw.write('\n')
     #[start]PT-ID and PT-pwd
     idpwdfile = open('PT-id-pwd.txt','r')
     ptuserf = idpwdfile.readline()
@@ -251,6 +273,9 @@ while True:
         fw.write(element)
     #[end]Write logs
     fw.close()
+    if diskExhausted == 1:
+        print '[Error] Disk exhausted'
+        break
     # user_pass_flag == 0
     #   user setting is correct and will be downloaded
     # user_download_pass_flag == 0

@@ -83,7 +83,7 @@ searchend = 150
 userdownscan = 600
 # disk
 #   The disk used for download
-disk = 'f:'
+disk = 'n:'
 #   The threshold for status warning
 diskThreshold = 0.1
 #   The reserve space on the disk (GB)
@@ -327,7 +327,7 @@ while 1:
         #print 'aaa'
 
         result3 = opener.open(gradeUrl)
-
+        
         #[start]Search for free pattern
         content = result3.read()
         #print content
@@ -391,7 +391,6 @@ while 1:
         DownloadUrl = 'https://pt.sjtu.edu.cn/download.php?id='+showno
 
         result2 = opener.open(DownloadUrl)
-
         fw2 = open('.\\torrent\\'+showno+'.torrent','wb+')
 
         #fy = open('y.torrent','r')
@@ -405,6 +404,7 @@ while 1:
             else:
                 break
     
+        opener.close
         fw2.close()
 
         flist = open('torrentlist.txt','a')
